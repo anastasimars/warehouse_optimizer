@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/self-test-data.iml" filepath="$PROJECT_DIR$/.idea/self-test-data.iml" />
+      <module fileurl="file://$PROJECT_DIR$/warehouseApp.iml" filepath="$PROJECT_DIR$/warehouseApp.iml" />
     </modules>
   </component>
 </project>
