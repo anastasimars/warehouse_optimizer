@@ -8,23 +8,18 @@ import java.util.Map;
 
 public class WarehouseApp {
     public static void main(String[] args) {
-        List<Order> orders = FileParser.parseJsonToList(LocalPaths.OPTIMIZE_ORDER_COUNT_ORDERS.path(), Order.class);
-        for (Order order : orders) {
-            System.out.println(order);
-        }
-        PickersData store = FileParser.parseJsonToObject(LocalPaths.OPTIMIZE_ORDER_COUNT_STORE.path(), PickersData.class);
-        System.out.println(store);
+        List<Order> orders = FileParser.parseJsonToList(LocalPaths.ADVANCED_OPTIMIZE_COUNT_ORDERS.path(), Order.class);
+        PickersData pickersData = FileParser.parseJsonToObject(LocalPaths.ADVANCED_OPTIMIZE_COUNT_STORE.path(), PickersData.class);
 
         OrderCountOptimizer orderCountOptimizer = new OrderCountOptimizer();
 
-        Map<String, List<Order>> stringListMap = orderCountOptimizer.optimizeOrderCount(store, orders);
+        Map<Order, String> stringListMap = orderCountOptimizer.optimizeOrderCount(pickersData, orders);
 
-        for (Map.Entry<String, List<Order>> entry : stringListMap.entrySet()) {
-            for (Order order : entry.getValue()) {
-                System.out.println(entry.getKey() + " - " + order);
-            }
-
+        for (Map.Entry<Order, String> entry : stringListMap.entrySet()) {
+            System.out.println(entry.getValue() + " " + entry.getKey().getOrderId() + " " +
+                    entry.getKey().getCompleteBy().minus(entry.getKey().getPickingTime()));
         }
+
 
     }
 }

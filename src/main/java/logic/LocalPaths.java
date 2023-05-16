@@ -2,6 +2,8 @@ package logic;
 public enum LocalPaths {
     ALLOCATION_STORE("advanced-allocation/store.json"),
     ALLOCATION_ORDERS("advanced-allocation/orders.json"),
+    ADVANCED_OPTIMIZE_COUNT_ORDERS("advanced-optimize-order-count/orders.json"),
+    ADVANCED_OPTIMIZE_COUNT_STORE("advanced-optimize-order-count/store.json"),
     OPTIMIZE_ORDER_COUNT_ORDERS("optimize-order-count/orders.json"),
     OPTIMIZE_ORDER_COUNT_STORE("advanced-optimize-order-count/store.json"),
     OPTIMIZE_ORDER_VALUE_ORDERS("advanced-optimize-order-value/orders.json"),

@@ -9,36 +9,38 @@ import java.util.*;
 
 public class OrderCountOptimizer {
 
-    public Map<String, List<Order>> optimizeOrderCount(PickersData pickersData, List<Order> orders) {
-        orders.sort(Comparator.comparing(Order::getCompleteBy));
+    public Map<Order, String> optimizeOrderCount(PickersData pickersData, List<Order> orders) {
+        Comparator<Order> ordersByUrgency = Comparator.comparing(Order::getCompleteBy).reversed();
+        Comparator<Order> ordersByExecution = ordersByUrgency.thenComparing(Order::getPickingTime).reversed();
+        orders.sort(ordersByExecution);
 
 
-        LocalTime startTime = pickersData.getPickingStartTime();
-        LocalTime endTime = pickersData.getPickingEndTime();
+        LocalTime pickingStartTime = pickersData.getPickingStartTime();
+        LocalTime pickingEndTime = pickersData.getPickingEndTime();
         Map<String, LocalTime> pickerWorkTimes = new HashMap<>();
         for (String picker : pickersData.getPickers()) {
-            pickerWorkTimes.put(picker, startTime);
+            pickerWorkTimes.put(picker, pickingStartTime);
         }
 
-        Map<String, List<Order>> assignedOrders = new HashMap<>();
+        Map<Order, String> assignedOrders = new HashMap<>();
         for (Order order : orders) {
-            String assignedPicker = null;
-            LocalTime earliestFinishTime = endTime;
 
-            for (Map.Entry<String, LocalTime> entry : pickerWorkTimes.entrySet()) {
-                LocalTime finishTime = entry.getValue().plus(order.getPickingTime());
-                if (finishTime.isBefore(order.getCompleteBy()) && finishTime.isBefore(earliestFinishTime)) {
-                    assignedPicker = entry.getKey();
-                    earliestFinishTime = finishTime;
+            String assignedPicker = null;
+            LocalTime earliestFinishTime = pickingEndTime;
+
+            for (Map.Entry<String, LocalTime> pickerEntry : pickerWorkTimes.entrySet()) {
+                LocalTime finishTimeToPickOneOrder = pickerEntry.getValue().plus(order.getPickingTime());
+                if (finishTimeToPickOneOrder.isBefore(order.getCompleteBy().plusMinutes(1))
+                        && finishTimeToPickOneOrder.isBefore(earliestFinishTime.plusMinutes(1))) {
+                    assignedPicker = pickerEntry.getKey();
+                    earliestFinishTime = finishTimeToPickOneOrder;
                 }
             }
 
             if (assignedPicker != null) {
-                if (!assignedOrders.containsKey(assignedPicker)) {
-                    assignedOrders.put(assignedPicker, new ArrayList<>());
-                }
-                assignedOrders.get(assignedPicker).add(order);
+                assignedOrders.put(order, assignedPicker);
                 pickerWorkTimes.put(assignedPicker, earliestFinishTime);
+
             }
         }
 
