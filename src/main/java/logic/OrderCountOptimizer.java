@@ -18,6 +18,8 @@ public class OrderCountOptimizer {
         LocalTime pickingStartTime = pickersData.getPickingStartTime();
         LocalTime pickingEndTime = pickersData.getPickingEndTime();
         Map<String, LocalTime> pickerWorkTimes = new HashMap<>();
+
+
         for (String picker : pickersData.getPickers()) {
             pickerWorkTimes.put(picker, pickingStartTime);
         }
@@ -29,10 +31,11 @@ public class OrderCountOptimizer {
             LocalTime earliestFinishTime = pickingEndTime;
 
             for (Map.Entry<String, LocalTime> pickerEntry : pickerWorkTimes.entrySet()) {
-                LocalTime finishTimeToPickOneOrder = pickerEntry.getValue().plus(order.getPickingTime());
+                String pickerId = pickerEntry.getKey();
+               LocalTime finishTimeToPickOneOrder = pickerEntry.getValue().plus(order.getPickingTime());
                 if (finishTimeToPickOneOrder.isBefore(order.getCompleteBy().plusMinutes(1))
                         && finishTimeToPickOneOrder.isBefore(earliestFinishTime.plusMinutes(1))) {
-                    assignedPicker = pickerEntry.getKey();
+                    assignedPicker = pickerId;
                     earliestFinishTime = finishTimeToPickOneOrder;
                 }
             }
@@ -40,10 +43,11 @@ public class OrderCountOptimizer {
             if (assignedPicker != null) {
                 assignedOrders.put(order, assignedPicker);
                 pickerWorkTimes.put(assignedPicker, earliestFinishTime);
-
             }
         }
 
         return assignedOrders;
     }
 }
+
+
