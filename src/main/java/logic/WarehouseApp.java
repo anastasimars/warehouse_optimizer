@@ -2,8 +2,6 @@ package logic;
 
 import logic.model.Order;
 import logic.model.PickersData;
-
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +15,20 @@ public class WarehouseApp {
 
         Map<Order, String> stringListMap = orderCountOptimizer.optimizeOrderCount(pickersData, orders);
 
+        for (Order o : orders) {
+            System.out.println(o);
+        }
+
+        System.out.println("_________________");
+
         for (Map.Entry<Order, String> entry : stringListMap.entrySet()) {
             System.out.println(entry.getValue() + " " + entry.getKey().getOrderId() + " " +
                     entry.getKey().getCompleteBy().minus(entry.getKey().getPickingTime()));
         }
+        System.out.println("_________________");
 
 
     }
+
+
 }
