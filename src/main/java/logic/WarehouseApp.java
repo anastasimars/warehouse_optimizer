@@ -15,6 +15,7 @@ public class WarehouseApp {
 
         Map<Order, String> stringListMap = orderCountOptimizer.optimizeOrderCount(pickersData, orders);
 
+        System.out.println("_________________");
         for (Order o : orders) {
             System.out.println(o);
         }
