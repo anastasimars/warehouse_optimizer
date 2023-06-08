@@ -14,14 +14,14 @@ public class OrderCountOptimizer {
 
 
     public Map<Order, String> optimizeOrderCount(PickersData pickersData, List<Order> orders) {
-        // 1. Firstly need to sort order by completeBy
+
         orders.sort(Comparator.comparing(Order::getCompleteBy));
-        //2. Next create a map with a picker and picker's work time Map<String, LocalTime> pickerWorkTime
+
         Map<String, LocalTime> pickerWorkTime = new HashMap<>();
         for (String picker : pickersData.getPickers()) {
             pickerWorkTime.put(picker, pickersData.getPickingStartTime());
         }
-        // 3. Next create a Map<Order, String> assignedOrders where will assign a picker to order and after update a pickerWorkTime
+
         Map<Order, String> assignedOrders = new HashMap<>();
         for (int i = 0; i < orders.size(); i++) {
             String assignedPicker = null;
@@ -29,20 +29,17 @@ public class OrderCountOptimizer {
             LocalTime earliestFinishTimeToPickOrder = pickersData.getPickingEndTime();
 
             for (Map.Entry<String, LocalTime> pickerEntry : pickerWorkTime.entrySet()) {
-                LocalTime finishTimeToPickOneOrder = pickerEntry.getValue().plus(orders.get(i).getPickingTime());
-                if (finishTimeToPickOneOrder.isBefore(orders.get(i).getCompleteBy().plusMinutes(1))
+                LocalTime finishTimeToPickOneOrder = pickerEntry.getValue().plus(actualOrder.getPickingTime());
+                if (finishTimeToPickOneOrder.compareTo(orders.get(i).getCompleteBy().plusMinutes(1)) < 0
                         && finishTimeToPickOneOrder.isBefore(earliestFinishTimeToPickOrder.plusMinutes(1))) {
-                    //Here we need a check for the picker, so that if p1 is already assigned, it will not be changed to p2
                     assignedPicker = pickerEntry.getKey();
                     earliestFinishTimeToPickOrder = finishTimeToPickOneOrder;
+
+
                 }
             }
-            if (assignedPicker != null && assignedOrders.isEmpty() && checkTotalTime(orders, pickersData, i)) {
-                assignedOrders.put(actualOrder, assignedPicker);
-                pickerWorkTime.put(assignedPicker, earliestFinishTimeToPickOrder);
-            }
 
-            if (assignedPicker != null && !assignedOrders.isEmpty() && !checkTotalTime(orders, pickersData, i)) {
+            if (assignedPicker != null && (assignedOrders.isEmpty() || !checkTotalTime(orders, pickersData, i))) {
                 assignedOrders.put(actualOrder, assignedPicker);
                 pickerWorkTime.put(assignedPicker, earliestFinishTimeToPickOrder);
             }
