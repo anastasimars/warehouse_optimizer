@@ -10,10 +10,10 @@ public class WarehouseApp {
         List<Order> orders = FileParser.parseJsonToList(LocalPaths.ADVANCED_OPTIMIZE_COUNT_ORDERS.path(), Order.class);
         PickersData pickersData = FileParser.parseJsonToObject(LocalPaths.ADVANCED_OPTIMIZE_COUNT_STORE.path(), PickersData.class);
 
-        OrderCountOptimizer orderCountOptimizer = new OrderCountOptimizer();
+        OrderCountOptimizerAlternative orderCountOptimizer = new OrderCountOptimizerAlternative();
 
 
-        Map<Order, String> stringListMap = orderCountOptimizer.optimizeOrderCount(pickersData, orders);
+        Map<String, List<Order>> stringListMap = orderCountOptimizer.optimizeOrderCount(pickersData, orders);
 
         System.out.println("_________________");
         for (Order o : orders) {
@@ -22,10 +22,12 @@ public class WarehouseApp {
 
         System.out.println("_________________");
 
-        for (Map.Entry<Order, String> entry : stringListMap.entrySet()) {
-            System.out.println(entry.getValue() + " " + entry.getKey().getOrderId() + " " +
-                    entry.getKey().getCompleteBy().minus(entry.getKey().getPickingTime()));
+        for (Map.Entry<String, List<Order>> entry : stringListMap.entrySet()) {
+            System.out.println("Picker: " + entry.getKey());
+            System.out.println(entry.getValue());
         }
+
+
         System.out.println("_________________");
 
 
